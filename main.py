@@ -1,9 +1,8 @@
-from io import BytesIO
+import subprocess
+from subprocess import Popen
 
 from chess import Board, Piece
 from PIL import Image
-from reportlab.graphics import renderPM
-from svglib.svglib import svg2rlg
 
 
 def piece_to_filename(piece: Piece, theme: str) -> str:
@@ -16,12 +15,19 @@ def piece_to_filename(piece: Piece, theme: str) -> str:
 
 
 def piece_to_image(piece: Piece, size: int = 64):
-    # TODO, use inkscape cli for conversion
     svgfile = piece_to_filename(piece, "cburnett")
-    drawing = svg2rlg(svgfile)
-    out = BytesIO()
-    renderPM.drawToFile(drawing, out, fmt="PNG", bg=)
-    return Image.open(out)
+    inkscape_proc = Popen(
+        ["inkscape", svgfile, "-w", str(size), "--export-type", "png", "-o", "-"],
+        stdout=subprocess.PIPE,
+    )
+    rcode = inkscape_proc.wait()
+    if rcode != 0:
+        raise RuntimeError("inkscape app error")
+    else:
+        if inkscape_proc.stdout is not None:
+            return Image.open(inkscape_proc.stdout, formats=["png"])
+        else:
+            raise RuntimeError("inkscape file error")
 
 
 class FenToImage:
