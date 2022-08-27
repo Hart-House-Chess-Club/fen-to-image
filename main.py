@@ -34,8 +34,16 @@ class PieceImage:
 
         svgfile = self.piece_to_filename(piece)
         inkscape_proc = Popen(
-            ["inkscape", svgfile, "-w", str(self.size),
-             "--export-type", "png", "-o", "-"],
+            [
+                self.config.inkscape_location,
+                svgfile,
+                "-w",
+                str(self.size),
+                "--export-type",
+                "png",
+                "-o",
+                "-",
+            ],
             stdout=subprocess.PIPE,
         )
         rcode = inkscape_proc.wait()
@@ -73,10 +81,10 @@ class FenToImage:
                 # step 1: render cell
                 draw.rectangle(
                     (rectx, recty, rectx + cell_size, recty + cell_size),
-                    fill=colors[(x+y) % 2],
+                    fill=colors[(x + y) % 2],
                 )
 
-                # step 1: render piece
+                # step 2: render piece
                 square = chess.SQUARES[x + y * 8]
                 piece = self.board.piece_at(square)
                 if piece is not None:
