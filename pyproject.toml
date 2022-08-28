@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fentoimage"
+dynamic = ["version"]
+authors = [
+  { name="Ahmed Khalf", email="ahmedkhalf567@gmail.com" },
+]
+description = "Generate a chess board image given a FEN, à la Lichess style."
+requires-python = ">=3.7"
+dependencies = [
+  "chess~=1.9",
+  "Pillow~=9.2",
+]
+readme = "README.md"
+license = { file="LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Hart-House-Chess-Club/fen-to-image"
+"Bug Tracker" = "https://github.com/Hart-House-Chess-Club/fen-to-image/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fentoimage"]
+
+[tool.hatch.version]
+path = "src/fentoimage/__init__.py"

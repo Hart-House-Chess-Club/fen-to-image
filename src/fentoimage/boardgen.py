@@ -45,7 +45,7 @@ class Config:
 
 
 class PieceImage:
-    PIECE_LOCATION = Path(__file__).parent / "pieces-svg"
+    PIECE_LOCATION = Path(__file__).parent / "assets" / "pieces"
 
     def __init__(self, size: int, config: Config) -> None:
         self.size = size
@@ -115,7 +115,10 @@ class FenToImage:
         image = Image.new(mode="RGB", size=(size, size))
         draw = ImageDraw.Draw(image)
 
-        font = ImageFont.truetype("./NotoSans-Bold.ttf", self.text_config.font_size)
+        font = ImageFont.truetype(
+            str(Path(__file__).parent / "assets" / "NotoSans-Bold.ttf"),
+            self.text_config.font_size,
+        )
         htext = "abcdefgh"
         vtext = "87654321"
         text_colors = self.text_config.color
