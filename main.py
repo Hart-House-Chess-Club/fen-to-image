@@ -2,7 +2,6 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import Popen
-from typing import Tuple
 
 import chess
 from chess import Board, Piece
@@ -10,13 +9,39 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 @dataclass
+class SquareConfig:
+    light_color: tuple[int, int, int] = (240, 217, 181)
+    dark_color: tuple[int, int, int] = (181, 136, 99)
+    light_highlight_color: tuple[int, int, int] = (205, 210, 106)
+    dark_highlight_color: tuple[int, int, int] = (170, 162, 58)
+
+    @property
+    def color(self):
+        return (self.light_color, self.dark_color)
+
+    @property
+    def highlight_color(self):
+        return (self.light_highlight_color, self.dark_highlight_color)
+
+
+@dataclass
+class TextConfig:
+    light_color: tuple[int, int, int] = (240, 217, 181)
+    dark_color: tuple[int, int, int] = (148, 111, 81)
+    font_size: int = 24
+    padding: int = 8
+
+    @property
+    def color(self):
+        return (self.light_color, self.dark_color)
+
+
+@dataclass
 class Config:
     inkscape_location: str = "inkscape"
     piece_theme: str = "cburnett"
-    light_square_color: Tuple[int, int, int] = (240, 217, 181)
-    dark_square_color: Tuple[int, int, int] = (181, 136, 99)
-    light_text_color: Tuple[int, int, int] = (240, 217, 181)
-    dark_text_color: Tuple[int, int, int] = (148, 111, 81)
+    square: SquareConfig = SquareConfig()
+    text: TextConfig = TextConfig()
 
 
 class PieceImage:
@@ -78,22 +103,25 @@ class FenToImage:
     def __init__(self, fen: str, config: Config):
         self.board = Board(fen)
         self.config = config
+        self.text_config = config.text
+        self.square_config = config.square
 
     def render(self, size: int = 1024):
         if size % 8 != 0:
             raise RuntimeError("Size must be multiple of 8")
 
-        cell_size = int(size / 8)
+        cell_size = size // 8
         piece_drawer = PieceImage(cell_size, self.config)
         image = Image.new(mode="RGB", size=(size, size))
         draw = ImageDraw.Draw(image)
 
-        font = ImageFont.truetype("./NotoSans-Bold.ttf", 24)
+        font = ImageFont.truetype("./NotoSans-Bold.ttf", self.text_config.font_size)
         htext = "abcdefgh"
         vtext = "87654321"
-        text_colors = [self.config.light_text_color, self.config.dark_text_color]
+        text_colors = self.text_config.color
+        text_padding = self.text_config.padding
 
-        colors = [self.config.light_square_color, self.config.dark_square_color]
+        colors = self.square_config.color
 
         for x in range(8):
             for y in range(8):
@@ -109,7 +137,7 @@ class FenToImage:
                 # step 2: render cell location
                 if y == 7:
                     draw.text(
-                        (rectx + 8, recty + cell_size - 8),
+                        (rectx + text_padding, recty + cell_size - text_padding),
                         htext[x],
                         fill=text_colors[x % 2],
                         anchor="ls",
@@ -118,7 +146,7 @@ class FenToImage:
 
                 if x == 7:
                     draw.text(
-                        (rectx + cell_size - 8, recty + 8),
+                        (rectx + cell_size - text_padding, recty + text_padding),
                         vtext[y],
                         fill=text_colors[y % 2],
                         anchor="rt",
