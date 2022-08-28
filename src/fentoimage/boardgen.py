@@ -26,6 +26,7 @@ class SquareConfig:
 
 @dataclass
 class TextConfig:
+    enabled: bool = True
     light_color: tuple[int, int, int] = (240, 217, 181)
     dark_color: tuple[int, int, int] = (148, 111, 81)
     font_size: int = 24
@@ -138,23 +139,24 @@ class FenToImage:
                 )
 
                 # step 2: render cell location
-                if y == 7:
-                    draw.text(
-                        (rectx + text_padding, recty + cell_size - text_padding),
-                        htext[x],
-                        fill=text_colors[x % 2],
-                        anchor="ls",
-                        font=font,
-                    )
+                if self.text_config.enabled:
+                    if y == 7:
+                        draw.text(
+                            (rectx + text_padding, recty + cell_size - text_padding),
+                            htext[x],
+                            fill=text_colors[x % 2],
+                            anchor="ls",
+                            font=font,
+                        )
 
-                if x == 7:
-                    draw.text(
-                        (rectx + cell_size - text_padding, recty + text_padding),
-                        vtext[y],
-                        fill=text_colors[y % 2],
-                        anchor="rt",
-                        font=font,
-                    )
+                    if x == 7:
+                        draw.text(
+                            (rectx + cell_size - text_padding, recty + text_padding),
+                            vtext[y],
+                            fill=text_colors[y % 2],
+                            anchor="rt",
+                            font=font,
+                        )
 
                 # step 3: render piece
                 # since chess.SQUARES starts at a1
