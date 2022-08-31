@@ -130,14 +130,23 @@ class FenToImage:
         self.image = Image.new(mode="RGB", size=(size, size))
         self.draw = ImageDraw.Draw(self.image)
 
-    def _render_square_background(self, x, y):
+    def _get_square_at(self, x, y):
+        # since chess.SQUARES starts at a1
+        return chess.SQUARES[x + (7 - y) * 8]
+
+    def _render_square_background(self, x, y, highlighted_squares=()):
         rectx = x * self.square_size
         recty = y * self.square_size
         colors = self.square_config.color
+        highlight_colors = self.square_config.highlight_color
+
+        fill_color = colors[(x + y) % 2]
+        if self._get_square_at(x, y) in highlighted_squares:
+            fill_color = highlight_colors[(x + y) % 2]
 
         self.draw.rectangle(
             (rectx, recty, rectx + self.square_size, recty + self.square_size),
-            fill=colors[(x + y) % 2],
+            fill=fill_color,
         )
 
     def _render_square_location(self, x, y):
@@ -171,19 +180,18 @@ class FenToImage:
         rectx = x * self.square_size
         recty = y * self.square_size
 
-        # since chess.SQUARES starts at a1
-        square = chess.SQUARES[x + (7 - y) * 8]
+        square = self._get_square_at(x, y)
         piece = self.board.piece_at(square)
         if piece is not None:
             piece_image = self.piece_drawer.render(piece)
             self.image.paste(piece_image, (rectx, recty), piece_image)
 
-    def render(self):
+    def render(self, *highlighted_squares: chess.Square):
         self._init_image()
 
         for x in range(8):
             for y in range(8):
-                self._render_square_background(x, y)
+                self._render_square_background(x, y, highlighted_squares)
                 if self.text_config.enabled:
                     self._render_square_location(x, y)
                 self._render_piece(x, y)
@@ -192,6 +200,13 @@ class FenToImage:
 
 
 if __name__ == "__main__":
+    from timeit import default_timer as timer
+
     fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
-    image = FenToImage(fen, Config()).render()
+
+    start = timer()
+    image = FenToImage(fen, Config()).render(chess.C7, chess.C5)
+    end = timer()
+
+    print("rendered in", end - start, "seconds")
     image.show()
