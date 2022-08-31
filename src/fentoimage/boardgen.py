@@ -101,72 +101,83 @@ class PieceImage:
 
 
 class FenToImage:
-    def __init__(self, fen: str, config: Config):
+    def __init__(self, fen: str, config: Config = Config(), cell_size: int = 128):
         self.board = Board(fen)
+        self.cell_size = cell_size
         self.config = config
         self.text_config = config.text
         self.square_config = config.square
 
-    def render(self, size: int = 1024):
-        if size % 8 != 0:
-            raise RuntimeError("Size must be multiple of 8")
-
-        cell_size = size // 8
-        piece_drawer = PieceImage(cell_size, self.config)
-        image = Image.new(mode="RGB", size=(size, size))
-        draw = ImageDraw.Draw(image)
-
-        font = ImageFont.truetype(
+        self.piece_drawer = PieceImage(self.cell_size, self.config)
+        self.font = ImageFont.truetype(
             str(Path(__file__).parent / "assets" / "NotoSans-Bold.ttf"),
             self.text_config.font_size,
         )
+
+    def _init_image(self):
+        size = self.cell_size * 8
+        self.image = Image.new(mode="RGB", size=(size, size))
+        self.draw = ImageDraw.Draw(self.image)
+
+    def _render_square_background(self, x, y):
+        rectx = x * self.cell_size
+        recty = y * self.cell_size
+        colors = self.square_config.color
+
+        self.draw.rectangle(
+            (rectx, recty, rectx + self.cell_size, recty + self.cell_size),
+            fill=colors[(x + y) % 2],
+        )
+
+    def _render_square_location(self, x, y):
+        rectx = x * self.cell_size
+        recty = y * self.cell_size
+
         htext = "abcdefgh"
         vtext = "87654321"
         text_colors = self.text_config.color
         text_padding = self.text_config.padding
 
-        colors = self.square_config.color
+        if y == 7:
+            self.draw.text(
+                (rectx + text_padding, recty + self.cell_size - text_padding),
+                htext[x],
+                fill=text_colors[x % 2],
+                anchor="ls",
+                font=self.font,
+            )
+
+        if x == 7:
+            self.draw.text(
+                (rectx + self.cell_size - text_padding, recty + text_padding),
+                vtext[y],
+                fill=text_colors[y % 2],
+                anchor="rt",
+                font=self.font,
+            )
+
+    def _render_piece(self, x, y):
+        rectx = x * self.cell_size
+        recty = y * self.cell_size
+
+        # since chess.SQUARES starts at a1
+        square = chess.SQUARES[x + (7 - y) * 8]
+        piece = self.board.piece_at(square)
+        if piece is not None:
+            piece_image = self.piece_drawer.render(piece)
+            self.image.paste(piece_image, (rectx, recty), piece_image)
+
+    def render(self):
+        self._init_image()
 
         for x in range(8):
             for y in range(8):
-                rectx = x * cell_size
-                recty = y * cell_size
-
-                # step 1: render cell
-                draw.rectangle(
-                    (rectx, recty, rectx + cell_size, recty + cell_size),
-                    fill=colors[(x + y) % 2],
-                )
-
-                # step 2: render cell location
+                self._render_square_background(x, y)
                 if self.text_config.enabled:
-                    if y == 7:
-                        draw.text(
-                            (rectx + text_padding, recty + cell_size - text_padding),
-                            htext[x],
-                            fill=text_colors[x % 2],
-                            anchor="ls",
-                            font=font,
-                        )
+                    self._render_square_location(x, y)
+                self._render_piece(x, y)
 
-                    if x == 7:
-                        draw.text(
-                            (rectx + cell_size - text_padding, recty + text_padding),
-                            vtext[y],
-                            fill=text_colors[y % 2],
-                            anchor="rt",
-                            font=font,
-                        )
-
-                # step 3: render piece
-                # since chess.SQUARES starts at a1
-                square = chess.SQUARES[x + (7 - y) * 8]
-                piece = self.board.piece_at(square)
-                if piece is not None:
-                    piece_image = piece_drawer.render(piece)
-                    image.paste(piece_image, (rectx, recty), piece_image)
-
-        return image
+        return self.image
 
 
 if __name__ == "__main__":
