@@ -111,7 +111,7 @@ class PieceImage:
                 raise RuntimeError("inkscape file error")
 
 
-class FenToImage:
+class BoardImage:
     def __init__(self, fen: str, config: Config = Config(), square_size: int = 128):
         self.board = Board(fen)
         self.square_size = square_size
@@ -186,7 +186,7 @@ class FenToImage:
             piece_image = self.piece_drawer.render(piece)
             self.image.paste(piece_image, (rectx, recty), piece_image)
 
-    def render(self, *highlighted_squares: chess.Square):
+    def render(self, highlighted_squares=()):
         self._init_image()
 
         for x in range(8):
@@ -197,16 +197,3 @@ class FenToImage:
                 self._render_piece(x, y)
 
         return self.image
-
-
-if __name__ == "__main__":
-    from timeit import default_timer as timer
-
-    fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
-
-    start = timer()
-    image = FenToImage(fen, Config()).render(chess.C7, chess.C5)
-    end = timer()
-
-    print("rendered in", end - start, "seconds")
-    image.show()
