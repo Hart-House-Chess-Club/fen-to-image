@@ -26,5 +26,5 @@ image.show()
 ## Example Output
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/36672196/187807385-6087105e-bf99-4167-8a75-7fb76b66a49f.PNG" width="512" alt="English Opening: King's English Variation, Kramnik-Shirov Counterattack">k
+  <img src="https://user-images.githubusercontent.com/36672196/187807385-6087105e-bf99-4167-8a75-7fb76b66a49f.PNG" width="512" alt="English Opening: King's English Variation, Kramnik-Shirov Counterattack">
 </p>
