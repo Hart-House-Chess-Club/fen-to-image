@@ -31,3 +31,6 @@ packages = ["src/fentoimage"]
 
 [tool.hatch.version]
 path = "src/fentoimage/__init__.py"
+
+[tool.black]
+line-length = 100

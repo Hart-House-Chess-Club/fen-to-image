@@ -18,9 +18,7 @@ class PieceImage:
         self.cache: dict[str, Image.Image] = {}
 
         if self.config.piece_theme not in self.list_themes():
-            raise RuntimeError(
-                f'Piece theme "{self.config.piece_theme}" does not exist.'
-            )
+            raise RuntimeError(f'Piece theme "{self.config.piece_theme}" does not exist.')
 
     @classmethod
     def list_themes(cls):
