@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -34,5 +34,5 @@ class TextConfig:
 class Config:
     inkscape_location: str = "inkscape"
     piece_theme: str = "cburnett"
-    square: SquareConfig = SquareConfig()
-    text: TextConfig = TextConfig()
+    square: SquareConfig = field(default_factory=SquareConfig)
+    text: TextConfig = field(default_factory=TextConfig)
