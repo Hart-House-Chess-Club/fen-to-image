@@ -5,7 +5,7 @@ from subprocess import Popen
 from chess import Piece
 from PIL import Image
 
-from fentoimage.config import Config
+from config import Config
 
 
 class PieceImage:

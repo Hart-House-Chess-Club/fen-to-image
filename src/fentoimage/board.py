@@ -116,8 +116,6 @@ class BoardImage:
         # add back the active colour, castling, en passant, half moves, full moves
         new_fen = new_fen + fen[space_ind:]
 
-        print("New fen " + new_fen)
-        print("Old fen " + fen)
         return new_fen
 
     def render(self, highlighted_squares=()) -> Image:
