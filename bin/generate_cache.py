@@ -2,7 +2,7 @@ from pathlib import Path
 
 import chess
 
-import fentoimage.boardgen as fti
+import src.fentoimage.board as fti
 
 FORCEGEN = False
 SIZES = [16, 32, 64, 128, 256]

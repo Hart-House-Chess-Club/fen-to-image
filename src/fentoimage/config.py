@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class SquareConfig:
     light_color: tuple[int, int, int] = (240, 217, 181)
@@ -34,5 +33,6 @@ class TextConfig:
 class Config:
     inkscape_location: str = "inkscape"
     piece_theme: str = "cburnett"
+    flip_board: bool = True
     square: SquareConfig = SquareConfig()
     text: TextConfig = TextConfig()
