@@ -33,4 +33,6 @@ With default alignment and default white at the bottom
 
 
 With black at the bottom
-
+<p align="center">
+  <img src="https://github.com/Hart-House-Chess-Club/fen-to-image/assets/52824986/f236d206-1df1-4acd-8f94-607da19ace06)" width="512" alt="English Opening: King's English Variation, Kramnik-Shirov Counterattack">
+</p>
